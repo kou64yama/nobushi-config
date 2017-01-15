@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '6'
+script:
+- npm run test
+deploy:
+  provider: npm
+  email: kou64yama@gmail.com
+  api_key:
+    secure: JTrc0IY1APi7PLHNRoCAteRj/L0anyHy8bDivT8Q8ThwK0FlflVpFL1Dsuz/pO/UF/w0xhmJF59NSqtdODPSSFjB2OssQaGW5ATluZtNpsLus/YU14dlSR9BWEt0LeKtYZXQ4s40kBjrY8fk+HRmP/DJGY2B6x4NnFg/F1OkUHkJ0vvQqeHwqjg5jNFVfWWsHlm4uYspHV6SCFs6EQzeTeR1LiIMd7gBpT41ISR2yq0UkpFSrQ/irlHLsNrg5Tygn9YhPoaYrllbtEdZ/R70cZs9LRKNWwUIZffuStq3NLDPtF2y/VYw/GXa1iHUzoIJYsCSf0V3P1fsW8ar9yO2uORc9CSwaZWbIyeS2/+QySKGzLiO4fSQWenYch0MhIAXcJJHKQrHPLvKI98nRM6NMsG81dOz1aDHHkEsYESk3vsKHTXcfPo34/d49MBRJ/wLbSMDPn7kbN6qvTv7gtifs1tuIo8BMaM0jRbWLU3ZgDLLGqJJ6q35+sQG6KGJSZ5ipMLausQ89yIIGJ25AS30O+loPR1IBHWT+siSIc8wmXqeE6Rduz5i90z49xaU9YZUSRXzkdKmJk5wjZ3lhIRof+m2+6TSaWk/2e56DFgFltrk+dHSkTksuGEzjD681+rSrCcsCIcmRq0vLaVao6XAi/TttqY09n5XcUZ6rO5JjEY=
+  on:
+    tags: true
+    repo: kou64yama/nobushi-config

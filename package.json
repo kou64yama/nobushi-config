@@ -1,0 +1,33 @@
+{
+  "name": "nobushi-config",
+  "version": "0.0.1",
+  "description": "The configuration store.",
+  "main": "lib/index.js",
+  "repository": "git@github.com:kou64yama:nobushi-config.git",
+  "author": "kou64yama <kou64yama@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "yamljs": "^0.2.8"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.0.37",
+    "@types/glob": "^5.0.30",
+    "@types/node": "^7.0.0",
+    "@types/rimraf": "^0.0.28",
+    "@types/yamljs": "^0.2.30",
+    "ava": "^0.17.0",
+    "glob": "^7.1.1",
+    "nyc": "^10.0.0",
+    "rimraf": "^2.5.4",
+    "ts-node": "^2.0.0",
+    "typescript": "^2.1.5"
+  },
+  "scripts": {
+    "test": "tsc && nyc ava",
+    "clean": "ts-node tools/run clean",
+    "copy": "ts-node tools/run build",
+    "transpile": "ts-node tools/run transpile",
+    "build": "ts-node tools/run build"
+  }
+}
