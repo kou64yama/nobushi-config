@@ -1,5 +1,7 @@
 # nobushi-config
 
+[![Build Status](https://travis-ci.org/kou64yama/nobushi-config.svg?branch=master)](https://travis-ci.org/kou64yama/nobushi-config)
+
 ## Installation
 
 ```sh

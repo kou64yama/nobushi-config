@@ -6,6 +6,10 @@
   "repository": "git@github.com:kou64yama:nobushi-config.git",
   "author": "kou64yama <kou64yama@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=7",
+    "npm": ">=3"
+  },
   "dependencies": {
     "bluebird": "^3.4.7",
     "yamljs": "^0.2.8"
