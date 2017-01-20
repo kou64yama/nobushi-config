@@ -14,4 +14,4 @@ const files = ['default', process.env.NODE_ENV].filter(x => x);
 const loader = new ConfigLoader(configDir);
 const config = Config.generate(loader.loadSync(files), middleware);
 
-export default config;
+module.exports = config;
