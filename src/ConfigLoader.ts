@@ -48,13 +48,12 @@ const parse = (data: string, type: string ) => {
   }
 };
 
-const NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || join(process.cwd(), 'config');
 const SUFFIXES = ['yml', 'json'];
 
 export default class ConfigLoader {
   private configDir: string;
 
-  public constructor(configDir: string = NODE_CONFIG_DIR) {
+  public constructor(configDir: string) {
     this.configDir = configDir;
   }
 
@@ -78,7 +77,7 @@ export default class ConfigLoader {
       .reduce((merged, e) => [...merged, ...e]);
   }
 
-  public async load(names: string[] = []): Promise<Entry[]> {
+  public async load(names: string[]): Promise<Entry[]> {
     const existing = new Set(await readdir(this.configDir));
     const files = await Bluebird.filter(
       this.createCandidates(names, existing),
@@ -91,7 +90,7 @@ export default class ConfigLoader {
     return this.parse(files);
   }
 
-  public loadSync(names: string[] = []): Entry[] {
+  public loadSync(names: string[]): Entry[] {
     const existing = new Set(fs.readdirSync(this.configDir));
     const files = this.createCandidates(names, existing)
       .filter(({ path }) => notThrowsSync(() => fs.accessSync(path, fs.constants.R_OK)) && fs.statSync(path).isFile())
