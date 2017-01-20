@@ -1,44 +1,54 @@
-import entries from './entries';
+import toEntries from './entries';
+import DefaultMiddleware from './middleware/DefaultMiddleware';
 
 export type Value = string | number | boolean | null | undefined;
 export type Entry = [string, Value];
 
+export interface Middleware {
+  has(entryMap: Map<string, Value>, key: string): boolean;
+  get(entryMap: Map<string, Value>, key: string): Value;
+}
+
 export default class Config {
-  public static generate<T>(config: T, decrypt?: (cipherText: string) => string): any {
-    return new Config(entries(config), decrypt) as any;
+  public static generate<T>(config: T, middleware: Middleware = new DefaultMiddleware()): T {
+    const entries = toEntries(config);
+    const keys = entries.map(([key]) => key);
+    const entryMap = new Map(entries);
+    return new Config(entryMap, keys, '', middleware) as any;
   }
 
-  public constructor(es: Entry[], decrypt?: (cipherText: string) => string) {
-    const map = new Map<string, Value>(es);
-    const keys = new Set<string>(es.map(([key]) => {
-      const offset = key.indexOf('.');
-      return offset >= 0 ? key.slice(0, offset) : key;
-    }));
+  private constructor(entryMap: Map<string, Value>, keys: string[], prefix: string, middleware: Middleware) {
+    const propNames = (
+      prefix ?
+        keys
+          .filter(key => key.startsWith(`${prefix}.`))
+          .map(key => key.slice(prefix.length + 1)) :
+        keys
+    ).map(fullName => {
+      const offset = fullName.indexOf('.');
+      const name = offset >= 0 ? fullName.slice(0, offset) : fullName;
+      return name;
+    });
 
-    Array.from(keys).map(key => {
-      const get = () => {
-        if (decrypt && map.has(`${key}.secure`)) {
-          return decrypt(map.get(`${key}.secure`) as string);
+    new Set(propNames).forEach((name) => {
+      const get = (): Config | Value => {
+        const key = prefix ? `${prefix}.${name}` : name;
+        if (!middleware.has(entryMap, key)) {
+          return new Config(entryMap, keys, key, middleware);
         }
-        if (map.has(key)) {
-          return map.get(key);
-        }
 
-        const children = es
-          .filter(([k]) => k.startsWith(`${key}.`))
-          .map(([k, v]) => [k.slice(key.length + 1), v] as Entry);
-
-        return new Config(children, decrypt);
-      };
-      let cache = () => {
-        const value = get();
-        cache = () => value;
-        return value;
+        return middleware.get(entryMap, key);
       };
 
-      Object.defineProperty(this, key, {
+      let getFromCache = () => {
+        const cache = get();
+        getFromCache = () => cache;
+        return cache;
+      };
+
+      Object.defineProperty(this, name, {
         enumerable: true,
-        get: () => cache(),
+        get: () => getFromCache(),
       });
     });
   }

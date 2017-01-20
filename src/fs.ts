@@ -15,4 +15,3 @@ export const stat = (path: string) => new Promise<fs.Stats>((resolve, reject) =>
 export const readFile = (path: string, encoding: string) => new Promise<string>((resolve, reject) => {
   fs.readFile(path, encoding, (err, data) => (err ? reject(err) : resolve(data)));
 });
-
