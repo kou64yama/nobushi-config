@@ -48,13 +48,12 @@ const parse = (data: string, type: string ) => {
   }
 };
 
-const NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || join(process.cwd(), 'config');
 const SUFFIXES = ['yml', 'json'];
 
 export default class ConfigLoader {
   private configDir: string;
 
-  public constructor(configDir: string = NODE_CONFIG_DIR) {
+  public constructor(configDir: string) {
     this.configDir = configDir;
   }
 
