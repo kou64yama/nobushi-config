@@ -4,7 +4,7 @@ import * as Bluebird from 'bluebird';
 import * as YAML from 'yamljs';
 import { readdir, access, stat, readFile } from './fs';
 import entries from './entries';
-import { Entry } from './Config';
+import { Value } from './Config';
 
 interface File {
   name: string;
@@ -70,14 +70,15 @@ export default class ConfigLoader {
       .map<FileWithPath>(file => ({ ...file, path: join(this.configDir, file.name) }))
   }
 
-  private parse(files: FileWithPathAndData[]): Entry[] {
+  private parse(files: FileWithPathAndData[]): { [key: string]: Value } {
     return files
       .map(({ data, type }) => parse(data, type))
       .map(entries)
-      .reduce((merged, e) => [...merged, ...e]);
+      .reduce((merged, e) => [...merged, ...e])
+      .reduce<{ [key: string]: Value }>((c, [k, v]) => ({ ...c, [k]: v }), {});
   }
 
-  public async load(names: string[]): Promise<Entry[]> {
+  public async load(names: string[]): Promise<{ [key: string]: Value }> {
     const existing = new Set(await readdir(this.configDir));
     const files = await Bluebird.filter(
       this.createCandidates(names, existing),
@@ -90,7 +91,7 @@ export default class ConfigLoader {
     return this.parse(files);
   }
 
-  public loadSync(names: string[]): Entry[] {
+  public loadSync(names: string[]): { [key: string]: Value } {
     const existing = new Set(fs.readdirSync(this.configDir));
     const files = this.createCandidates(names, existing)
       .filter(({ path }) => notThrowsSync(() => fs.accessSync(path, fs.constants.R_OK)) && fs.statSync(path).isFile())
