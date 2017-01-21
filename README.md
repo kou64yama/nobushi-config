@@ -31,7 +31,7 @@ datasource:
 ##### app.js
 
 ```js
-import config from 'nobushi-config/lib/load';
+import config from 'nobushi-config';
 
 // Get the config value.
 console.log(config.server);                 // => { host: 'localhost', port: 3000 }
