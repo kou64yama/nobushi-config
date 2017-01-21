@@ -6,7 +6,7 @@ process.env.NODE_ENV = 'test';
 process.env.NODE_CONFIG_DIR = join(__dirname, '../test/config');
 process.env.NODE_CONFIG_PRIVATE_KEY = readFileSync(join(__dirname, '../test/key/private.key'), 'base64');
 
-const config = require('./load');
+const config = require('./index');
 
 const c = {
   server: {
