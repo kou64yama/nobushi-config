@@ -2,47 +2,49 @@
 
 [![Build Status](https://travis-ci.org/kou64yama/nobushi-config.svg?branch=master)](https://travis-ci.org/kou64yama/nobushi-config)
 
-Library to read the configuration file written in YAML or JSON.
-
 ## Installation
 
 ```sh
-npm install --save nobushi-config
+npm install nobushi-config
 ```
 
 ## Usage
 
-Load config file in `config` directory or `NODE_CONFIG_DIR` (if set).
-
-##### config/default.yml
-
-```yml
-server:
-  host: localhost
-  port: ${PORT}
-
-# Allow dot delimited format.
-datasource.rdb.url: postgresql://localhost:5432/apps
-datasource:
-  rdb.username: apps
-  rdb.password.secure: '<base64 encoded, crypted string>'
-```
-
-##### app.js
-
 ```js
-import config from 'nobushi-config';
+import nc from 'nobushi-config';
+
+const config = nc(process.env).defaults({
+  port: 3000,
+  databaseUrl: 'sqlite:database.sqlite',
+  api: {
+    serverUrl: 'http://localhost:${port}',
+  },
+  auth: {
+    jwt: { secret: 'secret' },
+    facebook: {
+      id: '${FACEBOOK_ID:965881723876770}',
+      secret: '${FACEBOOK_SECRET:c0e8f5ba8f8e41688eb385a24a8a40b0}',
+    },
+  },
+});
 
 // Get the config value.
-console.log(config.server);                 // => { host: 'localhost', port: 3000 }
-console.log(config.database.rdb.url);       // => 'postgresql://localhost:5432/apps'
+console.log(config.port);                   // => 3000
+console.log(config.databaseUrl);            // => "sqlite:database.sqlite"
 
-// Extract environment variables.
-console.log(config.server.port);            // => 3000
+// Resolve placeholder.
+console.log(config.api.serverUrl);          // => "http://localhost:3000"
 
-// Decrypt the value of the key with '.secure' suffix
-// if NODE_CONFIG_PRIVATE_KEY is set
-console.log(config.database.rdb.password);  // => 'secret'
+// Resolve placeholder (default value).
+console.info(config.auth.facebook.id);      // => "965881723876770"
+
+// Resolve placeholder (environment variable).
+console.info(process.env.FACEBOOK_SECRET);  // => "7fd670edc01845e9aca2f3d70d11339d"
+console.info(config.auth.facebook.secret);  // => "7fd670edc01845e9aca2f3d70d11339d"
+
+// Replace value with environment variable.
+console.info(process.env.AUTH_JWT_SECRET);  // => "*sZBFn*&Wy@#7m_="
+console.info(config.auth.jwt.secret);       // => "*sZBFn*&Wy@#7m_="
 ```
 
 ## Author
