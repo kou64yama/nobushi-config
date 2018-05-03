@@ -1,8 +1,0 @@
-server:
-  host: localhost
-  port: 3000
-
-datasource:
-  url: postgresql://localhost:5432/apps
-  username: username
-  password: password

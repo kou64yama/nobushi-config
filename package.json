@@ -3,28 +3,6 @@
   "version": "0.3.1",
   "description": "The configuration store.",
   "main": "lib/index.js",
-  "engines": {
-    "node": ">=7",
-    "npm": ">=3"
-  },
-  "dependencies": {
-    "bluebird": "^3.4.7",
-    "yamljs": "^0.2.8"
-  },
-  "devDependencies": {
-    "@types/bluebird": "^3.0.37",
-    "@types/node": "^7.0.0",
-    "@types/rewire": "^2.5.27",
-    "@types/yamljs": "^0.2.30",
-    "ava": "^0.17.0",
-    "nyc": "^10.0.0",
-    "rewire": "^2.5.2",
-    "typescript": "^2.1.5"
-  },
-  "scripts": {
-    "test": "tsc && nyc ava",
-    "build": "tsc"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kou64yama/nobushi-config.git"
@@ -35,5 +13,41 @@
   "bugs": {
     "url": "https://github.com/kou64yama/nobushi-config/issues"
   },
-  "homepage": "https://github.com/kou64yama/nobushi-config#readme"
+  "homepage": "https://github.com/kou64yama/nobushi-config#readme",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "@types/node": "^8.10.11",
+    "jest": "^22.4.3",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.4",
+    "typescript": "^2.8.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "clean": "rimraf lib",
+    "build": "tsc"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.ts",
+      "!**/*.d.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)(spec|test).ts?(x)"
+    ]
+  }
 }
