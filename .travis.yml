@@ -5,6 +5,7 @@ script:
 - npm run test --ci --coverage
 - npm run build
 deploy:
+  skip_cleanup: true
   provider: npm
   email: kou64yama@gmail.com
   api_key:
