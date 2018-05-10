@@ -1,11 +1,19 @@
 import ConfigSource, { Value } from './ConfigSource';
 import normalize from './normalize';
+import { EventEmitter } from 'events';
 
-export default class Config {
+export type NextFunction = (error: any, value?: Value) => void;
+export type Middleware = (config: Config, key: string, value: Value, next: NextFunction) => void;
+
+export default class Config extends EventEmitter {
   private keys = new Set<string>();
 
-  public constructor(private sources: ConfigSource[]) {
-    this.sources.reduce((keys, source) => [...keys, ...source.keys()], [])
+  public constructor(
+    private sources: ConfigSource[],
+    private middlewares: Middleware[] = [],
+  ) {
+    super();
+    sources.reduce((keys, source) => [...keys, ...source.keys()], [])
       .forEach(key => this.keys.add(normalize(key)));
   }
 
@@ -15,15 +23,21 @@ export default class Config {
       return null;
     }
 
-    const value = found[0].get(found[1]);
-    if (typeof value !== 'string') {
-      return value;
-    }
-
-    return value.replace(
-      /\${([^:}]+)(:([^}]*))?}/g,
-      (_match, name, _p2, defaultValue) => this.get(name) || defaultValue,
-    );
+    let result: Value | undefined;
+    this.middlewares.reduce<NextFunction>(
+      (next, middleware) => (err, value: Value) => {
+        if (err) {
+          return next(err);
+        }
+        return middleware(this, key, value, next);
+      }, (err, value) => {
+        if (err) {
+          this.emit('error', err);
+        }
+        result = value;
+      },
+    )(null, found[0].get(found[1]));
+    return result || null;
   }
 
   private findSourceAndKey(key: string): [ConfigSource, string] | null {
