@@ -4,6 +4,8 @@
 [![Build Status](https://travis-ci.org/kou64yama/nobushi-config.svg)](https://travis-ci.org/kou64yama/nobushi-config)
 ![npm type definitions](https://img.shields.io/npm/types/nobushi-config.svg)
 
+Configuration control library for PaaS like Heroku or Azure.
+
 ## Installation
 
 ```sh
