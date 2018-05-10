@@ -1,6 +1,6 @@
 {
   "name": "nobushi-config",
-  "version": "0.3.1",
+  "version": "0.4.2",
   "description": "The configuration store.",
   "main": "lib/index.js",
   "repository": {
