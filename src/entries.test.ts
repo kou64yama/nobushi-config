@@ -1,21 +1,22 @@
-import test from 'ava';
-import entries from './entries';
+import entries from "./entries";
 
-test((t) => {
-  const obj = {
-    foo: {
-      bar: 'foobar'
-    },
-    baz: 'baz',
-    qux: 'qux',
-  };
+describe('entries(obj: any): [string, any][]', () => {
+  it('should return flatten entries', () => {
+    const obj = {
+      foo: {
+        bar: 'foobar'
+      },
+      baz: 'baz',
+      qux: 'qux',
+    };
 
-  const flat = entries(obj)
-    .reduce((mem, [key, value]) => ({ ...mem, [key]: value }), {});
+    const es = entries(obj)
+      .sort((a, b) => a[0].localeCompare(b[0]));
 
-  t.deepEqual<any>(flat, {
-    'foo.bar': 'foobar',
-    baz: 'baz',
-    qux: 'qux',
-  })
+    expect(es).toEqual([
+      ['baz', 'baz'],
+      ['foo.bar', 'foobar'],
+      ['qux', 'qux'],
+    ]);
+  });
 });

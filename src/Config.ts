@@ -1,55 +1,69 @@
-import toEntries from './entries';
-import DefaultMiddleware from './middleware/DefaultMiddleware';
+import ConfigSource, { Value } from './ConfigSource';
+import normalize from './normalize';
+import { EventEmitter } from 'events';
 
-export type Value = string | number | boolean | null | undefined;
-export type Entry = [string, Value];
+export type NextFunction = (error: any, value?: Value) => void;
+export type Middleware = (config: Config, key: string, value: Value, next: NextFunction) => void;
 
-export interface Middleware {
-  has(entryMap: Map<string, Value>, key: string): boolean;
-  get(entryMap: Map<string, Value>, key: string): Value;
-}
+export default class Config extends EventEmitter {
+  private keys = new Set<string>();
 
-export default class Config {
-  public static generate<T>(config: T, middleware: Middleware = new DefaultMiddleware()): T {
-    const entries = toEntries(config);
-    const keys = entries.map(([key]) => key);
-    const entryMap = new Map(entries);
-    return new Config(entryMap, keys, '', middleware) as any;
+  public constructor(
+    private sources: ConfigSource[],
+    private middlewares: Middleware[] = [],
+  ) {
+    super();
+    sources.reduce((keys, source) => [...keys, ...source.keys()], [])
+      .forEach(key => this.keys.add(normalize(key)));
   }
 
-  private constructor(entryMap: Map<string, Value>, keys: string[], prefix: string, middleware: Middleware) {
-    const propNames = (
-      prefix ?
-        keys
-          .filter(key => key.startsWith(`${prefix}.`))
-          .map(key => key.slice(prefix.length + 1)) :
-        keys
-    ).map(fullName => {
-      const offset = fullName.indexOf('.');
-      const name = offset >= 0 ? fullName.slice(0, offset) : fullName;
-      return name;
-    });
+  public get(key: string): Value {
+    const found = this.findSourceAndKey(key);
+    if (!found) {
+      return null;
+    }
 
-    new Set(propNames).forEach((name) => {
-      const get = (): Config | Value => {
-        const key = prefix ? `${prefix}.${name}` : name;
-        if (!middleware.has(entryMap, key)) {
-          return new Config(entryMap, keys, key, middleware);
+    let result: Value | undefined;
+    this.middlewares.reduce<NextFunction>(
+      (next, middleware) => (err, value: Value) => {
+        if (err) {
+          return next(err);
         }
+        return middleware(this, key, value, next);
+      }, (err, value) => {
+        if (err) {
+          this.emit('error', err);
+        }
+        result = value;
+      },
+    )(null, found[0].get(found[1]));
+    return result || null;
+  }
 
-        return middleware.get(entryMap, key);
-      };
+  private findSourceAndKey(key: string): [ConfigSource, string] | null {
+    const normalizedKey = normalize(key);
+    for (const source of this.sources) {
+      for (const x of source.keys()) {
+        const normalizedX = normalize(x);
+        if (normalizedX === normalizedKey) {
+          return [source, x];
+        }
+      }
+    }
 
-      let getFromCache = () => {
-        const cache = get();
-        getFromCache = () => cache;
-        return cache;
-      };
+    return null;
+  }
 
-      Object.defineProperty(this, name, {
+  public extend<T>(obj: T, prefix = ''): T {
+    return [...Object.keys(obj)]
+      .reduce((prev, name) => Object.defineProperty(prev, name, {
         enumerable: true,
-        get: () => getFromCache(),
-      });
-    });
+        get: () => {
+          const key = normalize(`${prefix}${name}`);
+          return this.keys.has(key)
+            ? this.get(key)
+            : this.extend((obj as any)[name], `${key}_`);
+        },
+      }), {});
   }
 }
