@@ -3,6 +3,7 @@ node_js:
 - '8'
 script:
 - npm run test --ci --coverage
+- npm run build
 deploy:
   provider: npm
   email: kou64yama@gmail.com
