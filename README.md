@@ -6,49 +6,68 @@
 
 Configuration control library for PaaS like Heroku or Azure.
 
-## Installation
+## Quick start
 
-```sh
+Install `nobushi-config` via NPM or YARN.
+
+```bash
 npm install nobushi-config
+# or
+yarn add nobuhsi-config
 ```
 
-## Usage
+Create an application (`app.js`):
 
 ```js
-import nc from 'nobushi-config';
+const nc = require('nobushi-config').default;
 
 const config = nc(process.env).defaults({
   port: 3000,
   databaseUrl: 'sqlite:database.sqlite',
-  api: {
-    serverUrl: 'http://localhost:${port}',
-  },
-  auth: {
-    jwt: { secret: 'secret' },
-    facebook: {
-      id: '${FACEBOOK_ID:965881723876770}',
-      secret: '${FACEBOOK_SECRET:c0e8f5ba8f8e41688eb385a24a8a40b0}',
-    },
-  },
 });
 
-// Get the config value.
-console.log(config.port);                   // => 3000
-console.log(config.databaseUrl);            // => "sqlite:database.sqlite"
+console.log('port:', config.port);
+console.log('databaseUrl:', config.databaseUrl);
+```
 
-// Resolve placeholder.
-console.log(config.api.serverUrl);          // => "http://localhost:3000"
+Run `app.js`:
 
-// Resolve placeholder (default value).
-console.info(config.auth.facebook.id);      // => "965881723876770"
+```shell
+$ node app.js
+port: 3000
+databaseUrl: sqlite:database.sqlite
 
-// Resolve placeholder (environment variable).
-console.info(process.env.FACEBOOK_SECRET);  // => "7fd670edc01845e9aca2f3d70d11339d"
-console.info(config.auth.facebook.secret);  // => "7fd670edc01845e9aca2f3d70d11339d"
+# Overwrite configurations by environment variables.
+$ export PORT='8080'
+$ export DATABASE_URL='postgresql://username:password@hostname:5432/db'
+$ node app.js
+port: 8080
+databaseUrl: postgresql://username:password@hostname:5432/db
+```
 
-// Replace value with environment variable.
-console.info(process.env.AUTH_JWT_SECRET);  // => "*sZBFn*&Wy@#7m_="
-console.info(config.auth.jwt.secret);       // => "*sZBFn*&Wy@#7m_="
+## Usage
+
+### Overwrite configurations
+
+```js
+const config = nc(arguments...).defaults(defaultConfig);
+```
+
+Can overwrite `defaultConfig` by `nc`'s `arguments`. Different naming
+conventions (such as camelCase, SNAKE_CASE, etc.) are considered the same
+property. For example, `DATABASE_URL`, `databaseUrl`, `database.url` and
+`database-url` are same property.
+
+### Support placeholder
+
+The part surrounded by `${}` is interpreted as a placeholder and the
+corresponding configuration value is expanded. The value following `:` is used
+as the value when the configuration value does not exist. For example:
+
+```js
+const config = nc(process.env).default({
+  databaseUrl: 'postgresql://username:${DATABASE_PASSWORD:secret}@localhost:5432/db',
+});
 ```
 
 ## Author
