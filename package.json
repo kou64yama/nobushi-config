@@ -25,11 +25,14 @@
     "jest": "^22.4.3",
     "rimraf": "^2.6.2",
     "ts-jest": "^22.4.4",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.8.0",
     "typescript": "^2.8.3"
   },
   "scripts": {
     "test": "jest",
     "clean": "rimraf lib",
+    "lint": "tslint \"./src/**/*.ts\"",
     "build": "tsc"
   },
   "jest": {
