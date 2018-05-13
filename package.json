@@ -3,6 +3,7 @@
   "version": "0.7.1",
   "description": "The configuration store.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kou64yama/nobushi-config.git"
