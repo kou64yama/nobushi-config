@@ -1,4 +1,4 @@
-import normalize from "./normalize";
+import normalize from './normalize';
 
 describe('normalize(text: string): string', () => {
   it('should convert port to PORT', () => {

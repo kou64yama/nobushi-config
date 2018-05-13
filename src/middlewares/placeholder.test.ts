@@ -1,8 +1,8 @@
-import placeholder from "./placeholder";
-import Config from "../Config";
+import Config from '../Config';
+import placeholder from './placeholder';
 
 describe('placeholder(): Middleware', () => {
-  it('should return a value', done => {
+  it('should return a value', (done) => {
     const middleware = placeholder();
     const config = new Config([]);
 
@@ -12,7 +12,7 @@ describe('placeholder(): Middleware', () => {
     expect(next.mock.calls[0][1]).toBe('foo');
   });
 
-  it('should resolve a placeholder', done => {
+  it('should resolve a placeholder', (done) => {
     const middleware = placeholder();
     const config = new Config([]);
     config.get = jest.fn(() => 'BAR');
@@ -23,7 +23,7 @@ describe('placeholder(): Middleware', () => {
     expect(next.mock.calls[0][1]).toBe('fooBARbaz');
   });
 
-  it('should resolve a placeholder using default value', done => {
+  it('should resolve a placeholder using default value', (done) => {
     const middleware = placeholder();
     const config = new Config([]);
 

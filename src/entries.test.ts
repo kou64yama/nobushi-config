@@ -1,10 +1,10 @@
-import entries from "./entries";
+import entries from './entries';
 
 describe('entries(obj: any): [string, any][]', () => {
   it('should return flatten entries', () => {
     const obj = {
       foo: {
-        bar: 'foobar'
+        bar: 'foobar',
       },
       baz: 'baz',
       qux: 'qux',

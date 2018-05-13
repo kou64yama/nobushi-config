@@ -1,6 +1,6 @@
 import nc from './nc';
 
-const index = require('./index');
+const index = require('./index'); // tslint:disable-line no-var-requires
 
 describe('index', () => {
   it('export nc as CommonJS module', () => {
