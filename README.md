@@ -19,7 +19,7 @@ yarn add nobuhsi-config
 Create an application (`app.js`):
 
 ```js
-const nc = require('nobushi-config').default;
+const nc = require('nobushi-config');
 
 const config = nc(process.env).defaults({
   port: 3000,
