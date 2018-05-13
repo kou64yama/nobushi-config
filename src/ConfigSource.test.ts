@@ -1,4 +1,4 @@
-import ConfigSource from "./ConfigSource";
+import ConfigSource from './ConfigSource';
 
 describe('ConfigSource', () => {
   describe('#get(key: string)', () => {

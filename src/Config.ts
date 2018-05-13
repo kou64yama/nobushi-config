@@ -1,6 +1,6 @@
+import { EventEmitter } from 'events';
 import ConfigSource, { Value } from './ConfigSource';
 import normalize from './normalize';
-import { EventEmitter } from 'events';
 
 export type NextFunction = (error: any, value?: Value) => void;
 export type Middleware = (config: Config, key: string, value: Value, next: NextFunction) => void;
@@ -17,6 +17,21 @@ export default class Config extends EventEmitter {
       .forEach(key => this.keys.add(normalize(key)));
   }
 
+  public extend<T>(obj: T, prefix = ''): T {
+    return [...Object.keys(obj)].reduce(
+      (prev, name) => Object.defineProperty(prev, name, {
+        enumerable: true,
+        get: () => {
+          const key = normalize(`${prefix}${name}`);
+          return this.keys.has(key)
+            ? this.get(key)
+            : this.extend((obj as any)[name], `${key}_`);
+        },
+      }),
+      {},
+    );
+  }
+
   public get(key: string): Value {
     const found = this.findSourceAndKey(key);
     if (!found) {
@@ -30,7 +45,8 @@ export default class Config extends EventEmitter {
           return next(err);
         }
         return middleware(this, key, value, next);
-      }, (err, value) => {
+      },
+      (err, value) => {
         if (err) {
           this.emit('error', err);
         }
@@ -52,18 +68,5 @@ export default class Config extends EventEmitter {
     }
 
     return null;
-  }
-
-  public extend<T>(obj: T, prefix = ''): T {
-    return [...Object.keys(obj)]
-      .reduce((prev, name) => Object.defineProperty(prev, name, {
-        enumerable: true,
-        get: () => {
-          const key = normalize(`${prefix}${name}`);
-          return this.keys.has(key)
-            ? this.get(key)
-            : this.extend((obj as any)[name], `${key}_`);
-        },
-      }), {});
   }
 }

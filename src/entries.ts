@@ -12,5 +12,5 @@ export default function entries(obj: any): Entry[] {
         ...mem,
         ...entries(x).map(([key, value]) => [`${prefix}.${key}`, value]),
       ];
-    }, []);
+    },      []);
 }
